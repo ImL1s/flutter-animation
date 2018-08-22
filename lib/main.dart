@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -30,20 +31,32 @@ class MyHomePage extends StatefulWidget {
   }
 }
 
-class MyHomePageState extends State<MyHomePage> {
-  var widget1 = Widget1();
-
+class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final random = Random();
-  int dataSet;
+  int dataSet = 50;
+  AnimationController animation;
+  double startHeight = 0.0;
+  double currentHeight = 0.0;
+  double endHeight;
 
   MyHomePageState() {
     print('MyHomePageState 構造函數');
+
+    animation = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300))
+      ..addListener(() => setState(() =>
+          currentHeight = lerpDouble(startHeight, endHeight, animation.value)));
+    endHeight = dataSet.toDouble();
+    animation.forward();
   }
 
   void changeData() {
     print('changeData');
     setState(() {
-      dataSet = dataSet == null ? random.nextInt(100) : null;
+      startHeight = currentHeight;
+      dataSet = random.nextInt(100);
+      endHeight = dataSet.toDouble();
+      animation.forward(from: 0.0);
     });
   }
 
@@ -57,6 +70,7 @@ class MyHomePageState extends State<MyHomePage> {
   void dispose() {
     print('dispose');
     super.dispose();
+    animation.dispose();
   }
 
   @override
@@ -82,13 +96,9 @@ class MyHomePageState extends State<MyHomePage> {
     print('MyHomePageState build');
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            dataSet != null ? Text('資料: $dataSet') : widget1,
-            Widget2(this.dataSet)
-          ],
+        child: CustomPaint(
+          size: Size(200.0, 100.0),
+          painter: BarChartPainter(currentHeight),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -99,109 +109,32 @@ class MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Widget1 extends StatefulWidget {
-  Widget1() {
-    print('Widget1 構造函數');
+class BarChartPainter extends CustomPainter {
+  static const barWidth = 10.0;
+  final barHeight;
+
+  BarChartPainter(this.barHeight) {
+    print('BarChartPainter constructor');
   }
 
   @override
-  State<StatefulWidget> createState() {
-    return Widget1State();
-  }
-}
+  void paint(Canvas canvas, Size size) {
+    print('BarChartPainter paint');
+    final paint = Paint()
+      ..color = Colors.blue[400]
+      ..style = PaintingStyle.fill;
 
-class Widget1State extends State<Widget1> {
-  Widget1State() {
-    print('Widget1State 構造函數');
-  }
-
-  @override
-  void initState() {
-    print('Widget1State initState');
-    super.initState();
+    canvas.drawRect(
+        Rect.fromLTWH((size.width - barWidth) / 2.0,
+            (size.height - barHeight) / 2.0, barWidth, barHeight),
+        paint);
   }
 
   @override
-  void dispose() {
-    print('Widget1State dispose');
-    super.dispose();
-  }
-
-  @override
-  void deactivate() {
-    print('Widget1State deactivate');
-    super.deactivate();
-  }
-
-  @override
-  void didUpdateWidget(Widget1 oldWidget) {
-    print('Widget1State didUpdateWidget');
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void didChangeDependencies() {
-    print('Widget1State didChangeDependencies');
-    super.didChangeDependencies();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text('Widget1State');
-  }
-}
-
-class Widget2 extends StatefulWidget {
-  final int i;
-
-  Widget2(this.i) {
-    print('Widget2 構造函數');
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    print('Widget2 createState');
-    return Widget2State();
-  }
-}
-
-class Widget2State extends State<Widget2> {
-  Widget2State() {
-    print('Widget2State 構造函數');
-  }
-
-  @override
-  void initState() {
-    print('Widget2State initState');
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    print('Widget2State dispose');
-    super.dispose();
-  }
-
-  @override
-  void deactivate() {
-    print('Widget2State deactivate');
-    super.deactivate();
-  }
-
-  @override
-  void didUpdateWidget(Widget2 oldWidget) {
-    print('Widget2State didUpdateWidget oldWidget: ${oldWidget.i}');
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void didChangeDependencies() {
-    print('Widget2State didChangeDependencies');
-    super.didChangeDependencies();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text('Widget2State: i:${widget.i}');
+  bool shouldRepaint(BarChartPainter old) {
+//    return false;
+    final shouldRePaintBool = barHeight != old.barHeight;
+    print('BarChartPainter shouldRepaint: $shouldRePaintBool');
+    return shouldRePaintBool;
   }
 }
