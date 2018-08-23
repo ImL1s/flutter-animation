@@ -38,24 +38,24 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   double startHeight = 0.0;
   double currentHeight = 0.0;
   double endHeight;
+  Tween<double> tween;
 
   MyHomePageState() {
     print('MyHomePageState 構造函數');
 
     animation = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300))
-      ..addListener(() => setState(() =>
-          currentHeight = lerpDouble(startHeight, endHeight, animation.value)));
-    endHeight = dataSet.toDouble();
+        vsync: this, duration: const Duration(milliseconds: 300));
+
+    tween = Tween<double>(begin: 0.0, end: dataSet.toDouble());
     animation.forward();
   }
 
   void changeData() {
     print('changeData');
     setState(() {
-      startHeight = currentHeight;
       dataSet = random.nextInt(100);
-      endHeight = dataSet.toDouble();
+      tween = Tween<double>(
+          begin: tween.evaluate(animation), end: dataSet.toDouble());
       animation.forward(from: 0.0);
     });
   }
@@ -98,7 +98,7 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       body: Center(
         child: CustomPaint(
           size: Size(200.0, 100.0),
-          painter: BarChartPainter(currentHeight),
+          painter: BarChartPainter(tween.animate(animation)),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -111,15 +111,20 @@ class MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
 class BarChartPainter extends CustomPainter {
   static const barWidth = 10.0;
-  final barHeight;
 
-  BarChartPainter(this.barHeight) {
+//  final barHeight;
+  final Animation<double> animation;
+
+  BarChartPainter(Animation<double> animation)
+      : animation = animation,
+        super(repaint: animation) {
     print('BarChartPainter constructor');
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     print('BarChartPainter paint');
+    final barHeight = animation.value;
     final paint = Paint()
       ..color = Colors.blue[400]
       ..style = PaintingStyle.fill;
@@ -128,15 +133,8 @@ class BarChartPainter extends CustomPainter {
         Rect.fromLTWH((size.width - barWidth) / 2.0,
             (size.height - barHeight) / 2.0, barWidth, barHeight),
         paint);
-
-
   }
 
   @override
-  bool shouldRepaint(BarChartPainter old) {
-//    return false;
-    final shouldRePaintBool = barHeight != old.barHeight;
-    print('BarChartPainter shouldRepaint: $shouldRePaintBool');
-    return shouldRePaintBool;
-  }
+  bool shouldRepaint(BarChartPainter old) => false;
 }
