@@ -128,6 +128,8 @@ class BarChartPainter extends CustomPainter {
         Rect.fromLTWH((size.width - barWidth) / 2.0,
             (size.height - barHeight) / 2.0, barWidth, barHeight),
         paint);
+
+
   }
 
   @override
