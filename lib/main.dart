@@ -2,8 +2,14 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animation/animation/animation_use_demo_1.dart';
+import 'package:flutter_animation/animation/animation_user_demo_2.dart';
 
-void main() => runApp(new MyApp());
+//void main() => runApp(new MyApp());
+
+//void main() => runApp(AnimationUseDemo1());
+
+void main() => runApp(AnimationUseDemo2());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
