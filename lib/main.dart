@@ -2,9 +2,8 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_animation/animation/animation_use_demo_1.dart';
-import 'package:flutter_animation/animation/animation_user_demo_2.dart';
 import 'package:flutter_animation/animation/animation_user_demo_3_animated_list.dart';
+import 'package:flutter_animation/network/http_use_demo_1.dart';
 
 //void main() => runApp(new MyApp());
 
@@ -12,10 +11,9 @@ import 'package:flutter_animation/animation/animation_user_demo_3_animated_list.
 
 //void main() => runApp(AnimationUseDemo2());
 
-void main() => runApp(new AnimatedListSample());
+//void main() => runApp(new AnimatedListSample());
 
-
-
+void main() => get();
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

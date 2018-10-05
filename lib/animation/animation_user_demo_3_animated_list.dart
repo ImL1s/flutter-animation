@@ -156,7 +156,7 @@ class CardItem extends StatelessWidget {
               color: Colors.primaries[item % Colors.primaries.length],
               child: Center(
                 child: Text(
-                  'Item %item',
+                  'Item $item',
                   style: textStyle,
                 ),
               ),
